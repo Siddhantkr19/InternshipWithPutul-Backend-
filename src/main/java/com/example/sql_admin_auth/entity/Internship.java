@@ -25,5 +25,5 @@ public class Internship {
     private String location;
     private String applyLink;
     private String duration;
-    private LocalDate lastDateToApply;
+    private String lastDateToApply;
 }
