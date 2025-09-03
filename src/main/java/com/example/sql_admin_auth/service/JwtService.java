@@ -32,7 +32,7 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .claim("role", role) // Add the role as a custom claim
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24-hour expiration
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1)) // 1-hour expiration
                 .signWith(getSignInKey())
                 .compact();
     }

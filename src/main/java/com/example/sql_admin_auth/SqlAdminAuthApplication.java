@@ -30,9 +30,9 @@ public class SqlAdminAuthApplication {
 			// Check if the admin user already exists to avoid creating duplicates
 			if (userRepository.findByUsername("admin").isEmpty()) {
 				User admin = new User();
-				admin.setUsername("admin");
+				admin.setUsername("siddhantkumar7488@gmail.com");
 				// Set the new password and make sure to hash it!
-				admin.setPassword(passwordEncoder.encode("@123"));
+				admin.setPassword(passwordEncoder.encode("Siddhant@123"));
 				admin.setRole("ADMIN");
 				userRepository.save(admin);
 				System.out.println("Admin user created successfully!");
@@ -46,7 +46,7 @@ public class SqlAdminAuthApplication {
 				i1.setLocation("Bangalore (Remote)");
 				i1.setApplyLink("#");
 				i1.setDuration("3 Months");
-				i1.setLastDateToApply(LocalDate.of(2025, 9, 15));
+				i1.setLastDateToApply("20 -09-2025");
 
 				Internship i2 = new Internship();
 				i2.setCompanyName("Data Insights");
@@ -56,7 +56,7 @@ public class SqlAdminAuthApplication {
 				i2.setLocation("Pune");
 				i2.setApplyLink("#");
 				i2.setDuration("6 Months");
-				i2.setLastDateToApply(LocalDate.of(2025, 9, 20));
+				i2.setLastDateToApply("2025- 9- 20");
 
 
 				internshipRepository.saveAll(List.of(i1));
