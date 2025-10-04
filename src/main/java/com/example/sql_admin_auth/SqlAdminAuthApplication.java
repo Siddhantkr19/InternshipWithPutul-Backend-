@@ -28,7 +28,7 @@ public class SqlAdminAuthApplication {
 	CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder passwordEncoder , InternshipRepository internshipRepository) {
 		return args -> {
 			// Check if the admin user already exists to avoid creating duplicates
-			if (userRepository.findByUsername("admin").isEmpty()) {
+			if (userRepository.findByUsername("siddhantkumar7488@gmail.com").isEmpty()) {
 				User admin = new User();
 				admin.setUsername("siddhantkumar7488@gmail.com");
 				// Set the new password and make sure to hash it!
@@ -36,6 +36,9 @@ public class SqlAdminAuthApplication {
 				admin.setRole("ADMIN");
 				userRepository.save(admin);
 				System.out.println("Admin user created successfully!");
+			}
+			else {
+				System.out.println(">>> Admin user 'siddhantkumar7488@gmail.com' already exists. Skipping creation.");
 			}
 			if (internshipRepository.count() == 0) {
 				Internship i1 = new Internship();
