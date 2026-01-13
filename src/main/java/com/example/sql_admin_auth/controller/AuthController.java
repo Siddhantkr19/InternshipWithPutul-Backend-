@@ -1,14 +1,12 @@
 package com.example.sql_admin_auth.controller;
 
-import com.example.sql_admin_auth.service.JwtService;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.sql_admin_auth.dto.ForgotPasswordRequest;
+import com.example.sql_admin_auth.dto.ResetPasswordRequest;
+import com.example.sql_admin_auth.dto.SignupRequest;
+import com.example.sql_admin_auth.dto.UserDTO;
+import com.example.sql_admin_auth.service.AuthService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -16,28 +14,32 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
-    private final JwtService jwtService;
+    private final AuthService authService;
 
-    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
-        this.jwtService = jwtService;
+    // Constructor Injection
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody AuthRequest request) {
-        // Authenticate the user
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
-        );
+        return authService.login(request);
+    }
 
-        // If authentication is successful, generate a token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-        final String jwt = jwtService.generateToken(userDetails);
+    @PostMapping("/signup")
+    public ResponseEntity<UserDTO> signup(@RequestBody SignupRequest request) {
+        return ResponseEntity.ok(authService.signup(request));
+    }
 
-        // Return the token in the response
-        return Map.of("token", jwt);
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.processForgotPassword(request.getEmail());
+        return ResponseEntity.ok("Reset link sent to your email.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok("Password has been reset successfully.");
     }
 }

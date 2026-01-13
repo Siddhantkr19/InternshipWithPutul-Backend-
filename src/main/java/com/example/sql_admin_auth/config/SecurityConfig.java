@@ -1,7 +1,4 @@
 package com.example.sql_admin_auth.config;
-
-import com.example.sql_admin_auth.config.filter.JwtAuthFilter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 import org.springframework.http.HttpMethod;
+import com.example.sql_admin_auth.jwt.JwtAuthFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +27,6 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
-    private String frontendUrl;
     public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userDetailsService = userDetailsService;
@@ -94,4 +91,3 @@ public class SecurityConfig {
         return source;
     }
 }
-
