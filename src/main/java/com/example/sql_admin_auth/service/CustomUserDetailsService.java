@@ -17,18 +17,18 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    // This method is required by the UserDetailsService interface.
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Find the user from our database using the repository
-        com.example.sql_admin_auth.entity.User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // 1. Find the user by EMAIL
+        com.example.sql_admin_auth.entity.User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        // Create the UserDetails object that Spring Security needs
+        // 2. 🛑 CRITICAL FIX: Return EMAIL as the username for Spring Security
+        // This ensures the JWT Token 'subject' will be the email.
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user.getEmail(), // <--- CHANGED from user.getUsername() to user.getEmail()
                 user.getPassword(),
-                Collections.singletonList(() -> "ROLE_" + user.getRole()) // Set the user's role
+                Collections.singletonList(() -> "ROLE_" + user.getRole())
         );
     }
 }

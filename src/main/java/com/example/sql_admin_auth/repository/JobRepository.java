@@ -8,4 +8,5 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     // Custom method to fetch all jobs, sorted by ID (Newest first)
     List<Job> findAllByOrderByIdDesc();
+    boolean existsByPostUrl(String postUrl);
 }

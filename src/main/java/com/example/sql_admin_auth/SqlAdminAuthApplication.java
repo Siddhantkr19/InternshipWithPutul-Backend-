@@ -67,8 +67,9 @@ public class SqlAdminAuthApplication {
 				i2.setLastDateToApply("2025- 9- 20");
 
 
-				internshipRepository.saveAll(List.of(i1));
+				internshipRepository.saveAll(List.of(i1, i2));
 				System.out.println("Sample internships created!");
+
 			}
 		};
 	}

@@ -1,4 +1,5 @@
 package com.example.sql_admin_auth.config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+
     public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userDetailsService = userDetailsService;
@@ -43,19 +45,25 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        // Allow access to the new login/auth endpoint
+                        // 1. Public Endpoints (No Login Required)
                         .requestMatchers("/api/auth/**", "/health", "/api/contact" , "/api/visits").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/internships").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll() // <--- ADDED THIS LINE
+
+                        // 2. Admin Only Endpoints
                         .requestMatchers("/api/internships/**").hasRole("ADMIN")
+                        .requestMatchers("/api/jobs/**").hasRole("ADMIN")         // <--- ADDED THIS LINE
                         .requestMatchers("/api/management/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // 3. User & Admin Endpoints
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+
+                        // 4. Block everything else
                         .anyRequest().authenticated()
                 )
-                // Set session management to STATELESS
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                // Add our custom JWT filter before the standard Spring Security filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -80,7 +88,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "https://internshipwithputul.netlify.app",
-                "https://internshipwithputul.onrender.com"// Add your Netlify URL here
+                "https://internshipwithputul.onrender.com"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

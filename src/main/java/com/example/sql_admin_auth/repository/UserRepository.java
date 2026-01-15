@@ -16,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Helper to get all users sorted by newest first
     List<User> findAllByOrderByIdDesc();
+    List<User> findByNotifyForJobsTrue();
+
+    List<User> findByNotifyForInternshipsTrue();
 }
