@@ -10,4 +10,7 @@ public class UserDTO {
     private String phoneNumber;
     private String course;
     private String role;
+
+    private boolean notifyForJobs;
+    private boolean notifyForInternships;
 }
