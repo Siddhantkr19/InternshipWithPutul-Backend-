@@ -25,4 +25,6 @@ public class Internship {
     private String applyLink;
     private String duration;
     private String lastDateToApply;
+    @Column(unique = true)
+    private String postUrl;
 }
