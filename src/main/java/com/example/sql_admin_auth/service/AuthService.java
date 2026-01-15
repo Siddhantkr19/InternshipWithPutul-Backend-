@@ -77,25 +77,40 @@ public class AuthService {
         newUser.setCourse(request.getCourse());
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setRole(Role.USER); // Default to USER
+        newUser.setNotifyForJobs(request.isNotifyForJobs());
+        newUser.setNotifyForInternships(request.isNotifyForInternships());
+
 
         User savedUser = userRepository.save(newUser);
         return modelMapper.map(savedUser, UserDTO.class);
     }
 
     // 3. FORGOT PASSWORD LOGIC
+    @org.springframework.transaction.annotation.Transactional
     public void processForgotPassword(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-        String token = UUID.randomUUID().toString();
+        // 1. CHECK & DELETE EXISTING TOKEN
+        tokenRepository.findByUser(user).ifPresent(existingToken -> {
+            tokenRepository.delete(existingToken);
+            tokenRepository.flush(); // <--- 🛑 THIS LINE FIXES THE ERROR 🛑
+        });
 
+        // 2. CREATE NEW TOKEN
+        String token = UUID.randomUUID().toString();
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setToken(token);
         resetToken.setUser(user);
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(15));
+
         tokenRepository.save(resetToken);
 
-        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+        // 3. SEND EMAIL
+        // (Ensure you updated application.properties with the App Password!)
+        String frontendUrl = "http://localhost:5173"; // Update for production later
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
+
         emailService.sendEmail(
                 user.getEmail(),
                 "Password Reset Request",
