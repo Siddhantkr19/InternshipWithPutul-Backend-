@@ -49,8 +49,14 @@ public class ScraperService {
         options.addArguments("--disable-dev-shm-usage"); // Prevents memory crashes in Docker
         options.addArguments("--disable-gpu");
 
+        // 🚨 NEW: Only use the Linux binary path if the OS is actually Linux!
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("linux")) {
+            options.setBinary("/usr/bin/chromium-browser");
+        }
+
         // Tell Selenium where Chromium is located inside the Alpine Docker container
-        options.setBinary("/usr/bin/chromium-browser");
+
         WebDriver driver = new ChromeDriver(options);
 
         // --- 1. COLLECTORS ---
