@@ -43,6 +43,14 @@ public class ScraperService {
         options.addArguments("--remote-allow-origins=*");
         // options.addArguments("--headless");
 
+        // 🚨 CRITICAL DOCKER SETTINGS 🚨
+        options.addArguments("--headless"); // MUST be uncommented for Docker
+        options.addArguments("--no-sandbox"); // Prevents permission crashes in Docker
+        options.addArguments("--disable-dev-shm-usage"); // Prevents memory crashes in Docker
+        options.addArguments("--disable-gpu");
+
+        // Tell Selenium where Chromium is located inside the Alpine Docker container
+        options.setBinary("/usr/bin/chromium-browser");
         WebDriver driver = new ChromeDriver(options);
 
         // --- 1. COLLECTORS ---
