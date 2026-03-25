@@ -1,146 +1,112 @@
-## InternshipWithPutul - Backend API
 
-This is the backend for a full-stack internship portal. It's a secure, stateless REST API built with Java and Spring Boot, designed to serve a React frontend. It handles user authentication, content management, and other core functionalities for the platform.
+# ⚙️ Internship WithPutul (IWP) 2.0 - AI Backend Engine
 
-## Features
+This is the backend for **Internship WithPutul (Version 2.0)**. What started as a standard REST API has been upgraded into a fully autonomous, AI-powered web scraping engine built with **Java 21** and **Spring Boot 3**. 
 
-**Stateless Authentication:** Secure API using Spring Security and JSON Web Tokens (JWT).
+Designed to serve a React frontend, this stateless backend not only handles JWT authentication and content management, but it also autonomously hunts for new tech jobs and internships, parses them using Google Gemini AI, and emails users automatically.
 
-**Role-Based Authorization:** Distinct permissions for ADMIN and USER roles protecting relevant endpoints.
+### ✨ Key Features
 
-**Internship Management:** Full CRUD (Create, Read, Update, Delete) API for internship listings.
+* 🤖 **Autonomous Web Scraping:** Uses **Selenium WebDriver** running in headless mode to scrape targeted job boards (e.g., freshersrecruitment.co.in) automatically every 4 hours using Spring `@Scheduled` tasks.
+* 🧠 **AI Data Parsing:** Integrates the **Google Gemini 2.5 Flash API** to read messy, unstructured website text and format it into clean, structured JSON objects.
+* 📧 **Automated Email Alerts:** A built-in batch notification system that automatically sends HTML emails to subscribed users whenever new jobs or internships are found.
+* 🔐 **Stateless Authentication:** Secure API endpoints protected by Spring Security 6 and JSON Web Tokens (JWT).
+* 👥 **Role-Based Authorization:** Distinct permissions for `ADMIN` and `USER` roles.
+* 🐳 **Production-Ready Docker:** Includes a custom multi-stage `Dockerfile` configured with Alpine Linux and Chromium to seamlessly run Selenium in cloud environments like Render.
 
-**User Management:** Admin-only API for creating, viewing, and deleting user accounts.
+### 🛠️ Tech Stack
 
-**Contact & Visitor System:** Endpoints for handling public contact form submissions and a simple visitor counter.
+* **Framework:** Spring Boot 3.2.5
+* **Language:** Java 21
+* **Database:** MySQL (Aiven Cloud) / Spring Data JPA
+* **AI Integration:** Google Gemini API
+* **Web Scraping:** Selenium WebDriver
+* **Security:** Spring Security 6 + JJWT
+* **Mail:** Spring Boot Starter Mail
+* **Build Tool:** Maven
+* **Deployment:** Docker (Render)
 
-**Profile-Based Configuration:** Separate configurations for local development (MySQL) and production (PostgreSQL) environments using Spring Profiles.
+---
 
-**Containerized:** Includes a Dockerfile for easy and consistent deployment.
+### 📡 API Endpoints
 
-## Tech Stack
+**Authentication & Users**
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Public | Authenticates a user and returns a JWT. |
+| `POST` | `/api/auth/signup` | Public | Registers a new user account. |
 
-**Framework:** Spring Boot 3
-
-**Language:** Java 17
-
-**Security:** Spring Security 6
-
-**Database:** Spring Data JPA / Hibernate
-
-**Production DB:** PostgreSQL (designed for NeonDB)
-
-**Local DB:** MySQL
-
-**Authentication:** JSON Web Token (JJWT)
-
-**Build Tool:** Maven
-
-**Deployment:** Docker
-
-## API Endpoints
-
-**Authentication**
- 
-**Method---------------Endpoint-------------Protection----------------Description**
-
-  POST-------------/api/auth/login------------Public-----------Authenticates a user and returns a JWT.
-
-
-**Internships**
-
-
-  **Method---------------Endpoint-------------Protection----------------Description**
-  
-   GET-------------/api/internships-----------Public----------Retrieves a list of all internships, sorted newest first.
-   
-   POST------------/api/internships-----------Admin-----------Creates a new internship posting.
-   
-   PUT-------------/api/internships/{id}------Admin-----------Updates an existing internship.
-   
-  DELETE----------/api/internships/{id}-------Admin------------Deletes an internship.
-  
+**Jobs & Internships (AI Generated)**
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/internships` | Public | Retrieves all AI-scraped internships. |
+| `GET` | `/api/jobs` | Public | Retrieves all AI-scraped jobs. |
+| `POST` | `/api/internships` | Admin | Manually creates a new internship. |
+| `DELETE` | `/api/internships/{id}` | Admin | Deletes an internship. |
 
 **Admin Management**
-
-
-  **Method---------------Endpoint---------------Protection----------------Description**
-  
-  GET---------------/api/management/users---------Admin----------Retrieves a list of all users.
-
-  POST--------------/api/management/users---------Admin----------Creates a new user (can be ADMIN or USER).
-
-  DELETE------------/api/management/users/{id}----Admin----------Deletes a user.
-
-  GET---------------/api/management/messages------Admin----------Retrieves all contact messages.
-
-  DELETE------------/api/management/messages/{id}--Admin---------Deletes a contact message.
-
-
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/management/users` | Admin | Retrieves a list of all registered users. |
+| `DELETE` | `/api/management/users/{id}`| Admin | Deletes a user. |
+| `GET` | `/api/management/messages`| Admin | Retrieves all contact form messages. |
 
 **Public Services**
+| Method | Endpoint | Protection | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/contact` | Public | Submits a message from the contact form. |
+| `GET/POST`| `/api/visits` | Public | Gets or increments the live visitor counter. |
 
- **Method---------------Endpoint---------------Protection----------------Description**
+---
 
-  POST-----------------/api/contact	-------------Public------------Submits a message from the contact form.
+### 💻 Local Setup
 
-  GET-----------------/api/visits----------------Public-------------Gets the current visitor count.
+To run this project on your local machine:
 
-  POST----------------/api/visits----------------Public-------------Increments the visitor count.
+**1. Prerequisites:**
+* Java 21 JDK
+* Maven
+* Google Chrome installed locally (for Selenium)
+* A MySQL server (Local or Cloud like Aiven)
 
-  GET-----------------/health--------------------Public--------------A simple health check endpoint.
+**2. Configure Local Properties:**
+Open `src/main/resources/application.properties` and add your local or cloud MySQL credentials, along with your Gemini API key:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/your_db_name
+spring.datasource.username=root (Aiven database )
+spring.datasource.password=your_password
 
+gemini.api.key=YOUR_GEMINI_API_KEY
+jwt.secret=YOUR_LOCAL_SECRET_KEY
+```
 
+**4. Run the application:**
+Run the application using your IDE or the Maven wrapper:
+```bash
+./mvnw spring-boot:run
+```
+The API will start on `http://localhost:8080`.
 
-## Local Setup
+---
 
-To run this project on your local machine, follow these steps:
+### 🚀 Configuration for Production Deployment (Render / Docker)
 
-**1) Prerequisites:**
+This application is configured to run inside a Docker container using a `prod` profile. When deploying to platforms like Render, the `Dockerfile` will automatically install Chromium for the scraper.
 
-       a) Java 17 JDK 
+You **must** set the following Environment Variables in your hosting dashboard:
 
-       b) Maven
+* `PORT` : `8080` (Required for Render port binding)
+* `SERVER_PORT` : `8080`
+* `SPRING_PROFILES_ACTIVE` : `prod`
+* `SPRING_DATASOURCE_URL` : Full JDBC connection string (e.g., Aiven MySQL URL).
+* `SPRING_DATASOURCE_USERNAME` : Production DB username.
+* `SPRING_DATASOURCE_PASSWORD` : Production DB password.
+* `SPRING_DATASOURCE_DRIVER_CLASS_NAME` : `com.mysql.cj.jdbc.Driver`
+* `SPRING_JPA_DATABASE_PLATFORM` : `org.hibernate.dialect.MySQLDialect`
+* `jwtSecret` : A long, secure random string.
+* `GEMINI_API_KEY` : Your active Google AI Studio key.
+* `SPRING_MAIL_USERNAME` : Gmail address for sending batch notifications.
+* `SPRING_MAIL_PASSWORD` : Gmail App Password.
 
-       c) A local MySQL server
-
-**2) Clone the repository:** git clone <your-repository-url>
-
-**3) Create a database:** In your MySQL client, create a new database for the project.
-
-**4) SQL**
-
-       CREATE DATABASE your_app_db;
-       
-       Configure local properties:
-       
-       Open the src/main/resources/application.properties file and update the datasource properties with your local MySQL credentials.
-
-**5) Run the application:**
-
-       You can run the main method in the SqlAdminAuthApplication.java class from your IDE,or use the Maven wrapper in your terminal:
-       
-       ./mvnw spring-boot:run
-       
-       The application will start on http://localhost:8080.
-
-**6) Configuration for Deployment**
-       The application is configured to use a separate profile for production.
-
-**7) application.properties:** 
-       Used for local development with MySQL.
-
-**8)application-prod.properties:**
-       Used for production deployment.It is configured for PostgreSQL and expects the following environment variables to be set on the hosting platform (e.g., Render).
-
-## Required Environment Variables for Production
-
-**SPRING_PROFILES_ACTIVE:** Must be set to prod.
-
- **DB_URL:** The full JDBC connection string for your production PostgreSQL database (e.g., from Neon).
-
- **DB_USERNAME:** Your production database username.
-
-**DB_PASSWORD:** Your production database password.
-
-**JWT_SECRET:** Your secure, long secret key for signing JWTs.
+---
+*Architected and developed by Siddhant Kumar*
